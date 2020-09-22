@@ -8,6 +8,8 @@ import java.io.File
 import java.util.*
 import kotlin.math.abs
 import kotlin.system.measureNanoTime
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
 
 abstract class AbstractTaskTests : AbstractFileTests() {
 
@@ -42,6 +44,12 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         try {
             sortTimes("input/time_in3.txt", "temp.txt")
             assertFileContent("temp.txt", File("input/time_out3.txt").readLines())
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortTimes("input/time_in5.txt", "temp.txt")
+            assertFileContent("temp.txt", File("input/time_out5.txt").readLines())
         } finally {
             File("temp.txt").delete()
         }
@@ -113,6 +121,37 @@ abstract class AbstractTaskTests : AbstractFileTests() {
                     24.7
                     99.5
                     121.3
+                """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortTemperatures("input/temp_in2.txt", "temp.txt")
+            assertFileContent(
+                "temp.txt",
+                """
+                    24.7
+                """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortTemperatures("input/temp_in3.txt", "temp.txt")
+            assertFileContent(
+                "temp.txt",
+                """
+                    -12.9
+                    -12.8
+                    -12.7
+                    -12.6
+                    -12.5
+                    -12.4
+                    -12.3
+                    -12.2
+                    -12.1
+                    -12.0
                 """.trimIndent()
             )
         } finally {
@@ -274,6 +313,35 @@ abstract class AbstractTaskTests : AbstractFileTests() {
                         32
                     """.trimIndent()
             )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortSequence("input/seq_in6.txt", "temp.txt")
+            assertFileContent(
+                "temp.txt",
+                """
+                        1000000
+                    """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortSequence("input/seq_in7.txt", "temp.txt")
+            assertFileContent(
+                "temp.txt",
+                """
+                        1234567
+                        50
+                    """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortSequence("input/seq_in8.txt", "temp.txt")
+            assertFileContent("temp.txt", File("input/seq_out8.txt").readLines())
         } finally {
             File("temp.txt").delete()
         }

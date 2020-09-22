@@ -2,6 +2,11 @@
 
 package lesson1
 
+import java.io.File
+import java.lang.Integer.MAX_VALUE
+import java.util.*
+
+
 /**
  * Сортировка времён
  *
@@ -35,6 +40,7 @@ package lesson1
 fun sortTimes(inputName: String, outputName: String) {
     TODO()
 }
+
 
 /**
  * Сортировка адресов
@@ -96,9 +102,18 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 99.5
  * 121.3
  */
+
+//оценку затрат и производительности добавлю чуть позже
+
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    val list = mutableListOf<Int>()
+    File(inputName).forEachLine {
+        if (!it.matches(Regex("""-?[\d][\d]?[\d]?\.[\d]"""))) throw IllegalArgumentException("некорректный формат данных")
+        list.add((it.toDouble() * 10).toInt())
+    }
+    File(outputName).writeText(quickSort(list.toIntArray()).map { it.toDouble() / 10 }.joinToString("\n"))
 }
+
 
 /**
  * Сортировка последовательности
@@ -130,7 +145,31 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  */
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+    var strToInt: Int
+    val map = mutableMapOf<Int, Int>()
+    val result = mutableListOf<Int>()
+    File(inputName).forEachLine {
+        strToInt = it.toInt()
+        map[strToInt] = (map[strToInt] ?: 0).plus(1)
+        result.add(strToInt)
+    }
+    val maxValue = map.maxOf { it.value }
+    var maxInt = MAX_VALUE
+    var minKey = 0
+    var minKeyValue = 0
+    map.forEach {
+        if (it.key <= maxInt && it.value == maxValue) {
+            minKey = it.key
+            minKeyValue = it.value
+            maxInt = it.key
+        }
+    }
+    result.removeIf { it == maxInt }
+    while (minKeyValue != 0) {
+        result.add(minKey)
+        minKeyValue--
+    }
+    File(outputName).writeText(result.joinToString("\n"))
 }
 
 /**

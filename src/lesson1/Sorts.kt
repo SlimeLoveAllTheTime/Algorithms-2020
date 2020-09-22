@@ -109,8 +109,9 @@ private fun quickSort(elements: IntArray, min: Int, max: Int) {
     }
 }
 
-fun quickSort(elements: IntArray) {
+fun quickSort(elements: IntArray): IntArray {
     quickSort(elements, 0, elements.size - 1)
+    return elements
 }
 
 fun countingSort(elements: IntArray, limit: Int): IntArray {
