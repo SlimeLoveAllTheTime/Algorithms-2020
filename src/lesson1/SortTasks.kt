@@ -158,7 +158,7 @@ fun sortSequence(inputName: String, outputName: String) {
     var minKey = 0
     var minKeyValue = 0
     map.forEach {
-        if (it.key <= maxInt && it.value == maxValue) {
+        if (it.key < maxInt && it.value == maxValue) {
             minKey = it.key
             minKeyValue = it.value
             maxInt = it.key
