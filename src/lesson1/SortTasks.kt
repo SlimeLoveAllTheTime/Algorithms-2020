@@ -107,11 +107,15 @@ fun sortAddresses(inputName: String, outputName: String) {
 
 fun sortTemperatures(inputName: String, outputName: String) {
     val list = mutableListOf<Int>()
+    var limit = 0
+    var temp: Int
     File(inputName).forEachLine {
-        if (!it.matches(Regex("""-?[\d][\d]?[\d]?\.[\d]"""))) throw IllegalArgumentException("некорректный формат данных")
-        list.add((it.toDouble() * 10).toInt())
+        temp = (it.replace(".", "")).toInt() + 2730
+        list.add(temp)
+        if (temp > limit) limit = temp
     }
-    File(outputName).writeText(quickSort(list.toIntArray()).map { it.toDouble() / 10 }.joinToString("\n"))
+    File(outputName).writeText(countingSort(list.toIntArray(), limit).map { (it - 2730).toDouble() / 10 }
+        .joinToString("\n"))
 }
 
 

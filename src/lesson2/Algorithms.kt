@@ -2,6 +2,8 @@
 
 package lesson2
 
+import kotlin.math.sqrt
+
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -95,8 +97,24 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * вернуть ту из них, которая встречается раньше в строке first.
  */
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    if (first == "" || second == "") return ""
+    val strTable = Array(first.length + 1) { Array(second.length + 1) { 0 } }
+    var subLength = 0
+    var end = 0
+    for (i in first.indices) {
+        for (j in second.indices) {
+            if (first[i] == second[j]) {
+                strTable[i + 1][j + 1] = strTable[i][j] + 1
+                if (strTable[i + 1][j + 1] > subLength) {
+                    subLength = strTable[i + 1][j + 1]
+                    end = i + 1
+                }
+            }
+        }
+    }
+    return first.substring(end - subLength, end)
 }
+
 
 /**
  * Число простых чисел в интервале
@@ -109,5 +127,55 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Единица простым числом не считается.
  */
 fun calcPrimesNumber(limit: Int): Int {
-    TODO()
+
+    if (limit <= 1) return 0
+
+    //создание решето
+    val isTrueList = BooleanArray(limit + 1) { false }
+    isTrueList[2] = true
+    if (limit > 2) isTrueList[3] = true
+
+    val sqrtLimit = sqrt(limit.toDouble()).toInt()
+    var result = 0
+    atkinTeor(limit, sqrtLimit, isTrueList)
+    filterSqrTrueNumber(limit, sqrtLimit, isTrueList).forEach { if (it) result++ }
+    return result
+}
+
+//фильтрация в соответсвии с теоремой Аткина
+fun atkinTeor(limit: Int, sqrtLimit: Int, isTrueList: BooleanArray) {
+    var sqrX = 0
+    var sqrY: Int
+    var n: Int
+    for (i in 1..sqrtLimit) {
+        sqrX += 2 * i - 1
+        sqrY = 0
+        for (j in 1..sqrtLimit) {
+            sqrY += 2 * j - 1
+            n = 4 * sqrX + sqrY
+            if (n <= limit && (n % 12 == 1 || n % 12 == 5)) isTrueList[n] = !isTrueList[n]
+            n -= sqrX
+            if (n <= limit && n % 12 == 7) isTrueList[n] = !isTrueList[n]
+            n -= 2 * sqrY
+            if (i > j && n <= limit && n % 12 == 11) isTrueList[n] = !isTrueList[n]
+        }
+    }
+}
+
+
+//Фильтрация (путем деления чисел на квадраты простых)
+fun filterSqrTrueNumber(limit: Int, sqrtLimit: Int, isTrueList: BooleanArray): BooleanArray {
+    var n: Int
+    var j: Int
+    for (i in 5..sqrtLimit) {
+        if (isTrueList[i]) {
+            n = i * i
+            j = n
+            while (j <= limit) {
+                isTrueList[j] = false
+                j += n
+            }
+        }
+    }
+    return isTrueList
 }
