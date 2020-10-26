@@ -30,18 +30,21 @@ class KtBinarySearchTreeTest : AbstractBinarySearchTreeTest() {
     @Tag("5")
     fun removeTest() {
         doRemoveTest()
+        someRemoveTest()
     }
 
     @Test
     @Tag("5")
     fun iteratorTest() {
         doIteratorTest()
+        someIteratorTest()
     }
 
     @Test
     @Tag("8")
     fun iteratorRemoveTest() {
         doIteratorRemoveTest()
+        someIteratorRemoveTest()
     }
 
     @Test

@@ -4,7 +4,6 @@ package lesson1
 
 import java.io.File
 import java.lang.Integer.MAX_VALUE
-import java.util.*
 
 
 /**
@@ -103,8 +102,8 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 121.3
  */
 
-//оценку затрат и производительности добавлю чуть позже
-
+// Трудоемкость = O(N)
+// Ресурсоемкость = O(N)
 fun sortTemperatures(inputName: String, outputName: String) {
     val list = mutableListOf<Int>()
     var limit = 0
@@ -148,6 +147,9 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  * 2
  */
+
+// Трудоемкость = O(N)
+// Ресурсоемкость = O(N)
 fun sortSequence(inputName: String, outputName: String) {
     var strToInt: Int
     val map = mutableMapOf<Int, Int>()

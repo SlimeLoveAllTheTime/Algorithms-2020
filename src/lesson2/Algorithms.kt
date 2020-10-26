@@ -96,6 +96,9 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
  */
+
+// Трудоемкость = O(N^2)
+// Ресурсоемкость = O((N+1)^2) = O(N^2)
 fun longestCommonSubstring(first: String, second: String): String {
     if (first == "" || second == "") return ""
     val strTable = Array(first.length + 1) { Array(second.length + 1) { 0 } }
@@ -126,6 +129,10 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Справка: простым считается число, которое делится нацело только на 1 и на себя.
  * Единица простым числом не считается.
  */
+
+// Решето Аткина
+// Алгоритм имеет асимптотическую сложность O(N/log(log(N)))
+// Ресурсоемкость = O(N^(1/2 + O(1)))
 fun calcPrimesNumber(limit: Int): Int {
 
     if (limit <= 1) return 0

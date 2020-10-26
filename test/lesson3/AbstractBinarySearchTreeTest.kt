@@ -164,6 +164,34 @@ abstract class AbstractBinarySearchTreeTest {
         }
     }
 
+    protected fun someRemoveTest() {
+        val ktTree1 = KtBinarySearchTree<Int>()
+        ktTree1.add(1)
+        ktTree1.remove(1)
+        assertNotEquals(ktTree1.size, 1)
+        ktTree1.clear()
+        ktTree1.addAll(listOf(2, 1, 3))
+        ktTree1.remove(2)
+        assertTrue(ktTree1.size == 2)
+        assertTrue(ktTree1.contains(1))
+        ktTree1.clear()
+
+        val ktTree2 = KtBinarySearchTree<Int>()
+        ktTree2.add(5000)
+        val list1 = mutableListOf<Int>()
+        for (i in 1..4999) list1.add(i)
+        for (i in 5001..10000) list1.add(i)
+        ktTree2.addAll(list1)
+        list1.clear()
+        ktTree2.remove(5000)
+        val size = ktTree2.size
+        val list2 = mutableListOf(1234, 2345, 3456, 4567, 5678, 6789, 7654, 8765, 9876)
+        ktTree2.removeAll(list2)
+        list2.clear()
+        assertEquals(ktTree2.size, size - 9)
+        ktTree2.clear()
+    }
+
     protected fun doIteratorTest() {
         implementationTest { create().iterator().hasNext() }
         implementationTest { create().iterator().next() }
@@ -205,6 +233,30 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("All clear!")
         }
+    }
+
+    protected fun someIteratorTest() {
+        val ktTree1 = KtBinarySearchTree<Int>()
+        ktTree1.addAll(listOf(1, 2, 3))
+        ktTree1.remove(2)
+        assertTrue(ktTree1.iterator().hasNext())
+        assertEquals(1, ktTree1.iterator().next())
+        ktTree1.clear()
+
+        val ktTree2 = KtBinarySearchTree<Int>()
+        ktTree2.add(5000)
+        val list1 = mutableListOf<Int>()
+        for (i in 1..4999) list1.add(i)
+        for (i in 5001..10000) list1.add(i)
+        ktTree2.addAll(list1)
+        list1.clear()
+        ktTree2.remove(5000)
+        assertTrue(ktTree2.iterator().hasNext())
+        assertEquals(1, ktTree2.iterator().next())
+        val size = ktTree2.size
+        ktTree2.remove(9876)
+        assertEquals(ktTree2.size, size - 1)
+        ktTree2.clear()
     }
 
     protected fun doIteratorRemoveTest() {
@@ -271,6 +323,46 @@ abstract class AbstractBinarySearchTreeTest {
                 )
             }
             println("All clear!")
+        }
+    }
+
+    protected fun someIteratorRemoveTest() {
+        implementationTest { create().iterator().remove() }
+        val random = Random()
+        for (iteration in 1..5000) {
+            val controlSet = TreeSet<Int>()
+            val removeIndex = random.nextInt(1000) + 1
+            var toRemove = 0
+            for (i in 1..1000) {
+                val newNumber = random.nextInt(1000)
+                controlSet.add(newNumber)
+                if (i == removeIndex) {
+                    toRemove = newNumber
+                }
+            }
+            val binarySet = create()
+            for (element in controlSet) {
+                binarySet += element
+            }
+            controlSet.remove(toRemove)
+            val iterator = binarySet.iterator()
+            assertFailsWith<IllegalStateException> {
+                iterator.remove()
+            }
+            var counter = binarySet.size
+            while (iterator.hasNext()) {
+                val element = iterator.next()
+                counter--
+                if (element == toRemove) {
+                    iterator.remove()
+                    assertFailsWith<IllegalStateException>() {
+                        iterator.remove()
+                    }
+                }
+            }
+            assertEquals(0, counter)
+            assertTrue(binarySet.checkInvariant())
+            assertEquals(controlSet.size, binarySet.size)
         }
     }
 

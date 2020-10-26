@@ -18,12 +18,15 @@ class KtTrieTest : AbstractTrieTest() {
     @Tag("7")
     fun iteratorTest() {
         doIteratorTest()
+        someIteratorTest()
     }
 
     @Test
     @Tag("8")
     fun iteratorRemoveTest() {
         doIteratorRemoveTest()
+        someIteratorRemoveTest1()
+        someIteratorRemoveTest2()
     }
 
 }
