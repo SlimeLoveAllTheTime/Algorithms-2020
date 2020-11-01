@@ -78,6 +78,45 @@ abstract class AbstractOpenAddressingSetTest {
         }
     }
 
+    protected fun someRemoveTest1() {
+        val bitsNumber = 9
+        val openAddressingSetTest = create<Int>(bitsNumber)
+        openAddressingSetTest.add(11)
+        val size = openAddressingSetTest.size
+        val removedSize = size - 1
+        openAddressingSetTest.remove(11)
+        assertEquals(size - 1, removedSize)
+        assertFalse(openAddressingSetTest.remove(11))
+        openAddressingSetTest.clear()
+    }
+
+    protected fun someRemoveTest2() {
+        val random = Random()
+        for (iteration in 1..1000) {
+            val bitsNumber = 10
+            val openAddressingSet = create<Int>(bitsNumber)
+            for (i in 1..50) {
+                val firstInt = random.nextInt(32)
+                val secondInt = firstInt + (1 shl bitsNumber)
+                openAddressingSet += secondInt
+                openAddressingSet += firstInt
+                val expectedSize = openAddressingSet.size - 1
+
+                assertTrue(openAddressingSet.remove(secondInt))
+
+                assertFalse(secondInt in openAddressingSet)
+
+                assertTrue(firstInt in openAddressingSet)
+
+                assertEquals(expectedSize, openAddressingSet.size)
+
+                assertFalse(openAddressingSet.remove(secondInt))
+
+                assertEquals(expectedSize, openAddressingSet.size)
+            }
+        }
+    }
+
     protected fun doIteratorTest() {
         val random = Random()
         for (iteration in 1..100) {
@@ -118,6 +157,37 @@ abstract class AbstractOpenAddressingSetTest {
             }
             println("All clear!")
         }
+    }
+
+    protected fun someIteratorTest() {
+        val bitsNumber1 = 12
+        val openAddressingSet1 = create<Int>(bitsNumber1)
+        val iterator1 = openAddressingSet1.iterator()
+        assertFalse(iterator1.hasNext())
+        openAddressingSet1.add(45)
+        assertFalse(iterator1.hasNext())
+        assertFailsWith<IllegalStateException> { iterator1.next() }
+        openAddressingSet1.clear()
+
+        val list = mutableListOf(1, 85, 123, 5678, 567, 23, 4)
+        val bitsNumber2 = 12
+        val openAddressingSet2 = create<Int>(bitsNumber2)
+        openAddressingSet2.addAll(list)
+        val iterator2 = openAddressingSet2.iterator()
+        assertTrue(iterator2.hasNext())
+        assertEquals(1, iterator2.next())
+        assertTrue(iterator2.hasNext())
+        assertEquals(4, iterator2.next())
+        assertEquals(23, iterator2.next())
+        for (i in 0..2) {
+            iterator2.next()
+        }
+        assertEquals(5678, iterator2.next())
+        assertFalse(iterator2.hasNext())
+        assertFailsWith<IllegalStateException> { iterator2.next() }
+        list.clear()
+        openAddressingSet1.clear()
+        openAddressingSet2.clear()
     }
 
     protected fun doIteratorRemoveTest() {
@@ -175,5 +245,33 @@ abstract class AbstractOpenAddressingSetTest {
             }
             println("All clear!")
         }
+    }
+
+    protected fun someIteratorRemoveTest() {
+        val bitsNumber = 12
+        val openAddressingSet1 = create<Int>(bitsNumber)
+        val list = mutableListOf(1, 123, 63456, 34534, 434, 623)
+        openAddressingSet1.addAll(list)
+        val iterator1 = openAddressingSet1.iterator()
+        iterator1.next()
+        iterator1.remove()
+        assertFalse(openAddressingSet1.contains(1))
+        assertTrue(openAddressingSet1.contains(123))
+        iterator1.next()
+        iterator1.remove()
+        assertFalse(openAddressingSet1.contains(123))
+        for (i in 0..2) {
+            list.add(iterator1.next())
+            iterator1.remove()
+        }
+        assertFalse(openAddressingSet1.containsAll(list))
+        val size = openAddressingSet1.size
+        assertEquals(63456, iterator1.next())
+        iterator1.remove()
+        assertTrue(!(openAddressingSet1.contains(63456)))
+        assertEquals(0, size - 1)
+        assertFailsWith<IllegalStateException> { iterator1.next() }
+        openAddressingSet1.clear()
+        list.clear()
     }
 }

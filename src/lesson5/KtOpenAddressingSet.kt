@@ -1,8 +1,11 @@
 package lesson5
 
+import java.lang.IllegalStateException
+
 /**
  * Множество(таблица) с открытой адресацией на 2^bits элементов без возможности роста.
  */
+@Suppress("UNCHECKED_CAST")
 class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T>() {
     init {
         require(bits in 2..31)
@@ -13,6 +16,8 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
     private val storage = Array<Any?>(capacity) { null }
 
     override var size: Int = 0
+
+    private val removedSet = mutableSetOf<Any>()
 
     /**
      * Индекс в таблице, начиная с которого следует искать данный элемент
@@ -28,7 +33,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         var index = element.startingIndex()
         var current = storage[index]
         while (current != null) {
-            if (current == element) {
+            if (current == element && current !in removedSet) {
                 return true
             }
             index = (index + 1) % capacity
@@ -48,6 +53,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      * но в данном случае это было введено для упрощения кода.
      */
     override fun add(element: T): Boolean {
+        if (element in removedSet) removedSet.remove(element)
         val startingIndex = element.startingIndex()
         var index = startingIndex
         var current = storage[index]
@@ -75,8 +81,26 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя
      */
+
+    // Трудоемкость (в худшем случае) = О(N), где N - количество элементов. В общем случае трудоемкость = О(S),
+    // где S - количество проходов по циклу.
+    // Ресурсоемкость = О(1)
     override fun remove(element: T): Boolean {
-        TODO("not implemented")
+        if (!contains(element)) return false
+        val startInd = element.startingIndex()
+        var ind = startInd
+        var current = storage[ind]
+        while (current != null && current != removedSet) {
+            if (current == element) {
+                removedSet.add(current)
+                size--
+                return true
+            }
+            ind = (ind + 1) % capacity
+            current = storage[ind]
+            if (ind == startInd) break
+        }
+        return false
     }
 
     /**
@@ -89,7 +113,44 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя (сложная, если поддержан и remove тоже)
      */
-    override fun iterator(): MutableIterator<T> {
-        TODO("not implemented")
+    override fun iterator(): MutableIterator<T> = OpenAddressingSetIterator()
+
+    inner class OpenAddressingSetIterator : MutableIterator<T> {
+
+        private var current: T? = null
+
+        private var curInd = 0
+
+        private var currentSize = size
+
+        // Трудоемкость = О(S), где S - количество проходов по циклу
+        // Ресурсоемкость = О(1)
+        private fun findCurrent(): T? {
+            while (storage[curInd] == null || storage[curInd] in removedSet) curInd = (curInd + 1) % capacity
+            current = storage[curInd] as T
+            currentSize--
+            return current
+        }
+
+        // Трудоемкость = О(1)
+        // Ресурсоемкость = О(1)
+        override fun hasNext(): Boolean = currentSize > 0
+
+        // Трудоемкость = О(S), где S - количество проходов по циклу
+        // Ресурсоемкость = О(1)
+        override fun next(): T {
+            if (!hasNext()) throw IllegalStateException()
+            curInd = (curInd + 1) % capacity
+            return findCurrent()!!
+        }
+
+        // Трудоемкость (в худшем случае) = О(N), где N - количество элементов. В общем случае трудоемкость = О(S),
+        // где S - количество проходов по циклу.
+        // Ресурсоемкость = О(1)
+        override fun remove() {
+            if (current == null) throw IllegalStateException()
+            remove(current)
+        }
+
     }
 }
