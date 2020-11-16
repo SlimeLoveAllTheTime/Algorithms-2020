@@ -148,8 +148,8 @@ abstract class AbstractTrieTest {
         val list1 = mutableListOf("q", "qwer", "qwert", "qwerty")
         trie1.addAll(list1)
         trie1.remove("q")
-        assertEquals("qwerty", trie1.iterator().next())
-        assertEquals("qwer", trie1.last())
+        assertEquals("qwer", trie1.iterator().next())
+        assertEquals("qwerty", trie1.last())
         list1.clear()
         trie1.clear()
 
@@ -260,7 +260,7 @@ abstract class AbstractTrieTest {
                 counter1--
                 if (element == toRemove1) {
                     iterator1.remove()
-                    assertFailsWith<IllegalStateException>("Trie.remove() was successfully called twice in a row.") {
+                    assertFailsWith<IllegalStateException> {
                         iterator1.remove()
                     }
                     assertEquals(0, counter1)
@@ -280,8 +280,15 @@ abstract class AbstractTrieTest {
         val trie = KtTrie()
         val list = mutableListOf("a", "ab", "ac")
         trie.addAll(list)
-        trie.remove("ab")
-        assertEquals("ac", trie.iterator().next())
+        val trieIterator = trie.iterator()
+        assertEquals("a", trieIterator.next())
+        assertEquals("ab", trieIterator.next())
+        trieIterator.remove()
+        assertEquals("ac", trieIterator.next())
+        trieIterator.remove()
+        assertFalse(trieIterator.hasNext())
+        assertFailsWith<IllegalStateException> { trieIterator.next() }
+        assertFailsWith<IllegalStateException> { trieIterator.remove() }
     }
 
 }

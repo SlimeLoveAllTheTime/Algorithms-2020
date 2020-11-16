@@ -84,38 +84,47 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
 
     inner class TrieIterator : MutableIterator<String> {
 
-        private var current: Node? = root
-
         private val dataMap = mutableMapOf<Node, String>()
 
         private var wordsStack = Stack<String>()
 
-        private var lastWord: String = ""
+        private var lastWord = ""
+
+        private var wordsControl = mutableSetOf<String>()
+
+        private var isBranch = true
 
         init {
-            createDataBase(current!!)
+            createDataBase(root)
         }
 
 
-        // Трудоемкость = О(F * Q),где F - наибольшее слово (size), Q - кол-во вариантов слов
-        // Ресурсоемкость: О(N) + O(M), где N = l * (l - 1) / 2, l - конечная длина слова, при этом в мапе будет сумма
-        // таких слов, т.е l1 * (l1 - 1) / 2 + ... + lk * (lk - 1) / 2 (k - кол-во слов в trie),
-        // следовательно O(N) = O(length(самого длинного слова) * (length - 1) / 2)
-        // M - кол-во конечных слов в стаке, N всегда больше M
-        // Ресурсоемкость = О(N) + O(M) = О(N)
-        private fun createDataBase(curNode: Node) {
+        // Записываю в стек только слово(по сути проход по веткам), в стек загружается следующее слово в случае, если стек
+        // становится пустым, это проверка есть в методе next().
+        // На счет прохода каждый раз по пройденным веткам: Если пытаться не проходить по ним повторный раз, то трудоемкость
+        // возрастет. При этом повторный проход не грозит сильной потерей в скорости, так как внутренняя логика не будет
+        // срабатывать.
+        // Добавил только отсечение последних, незначащих нодов "endTag".
 
-            for ((char, node) in curNode.children) {
+        // Трудоемкость = О(branch.length), branch.length - длина ветви.
+        // Ресурсоемкость = О(количество нодов + количество слов) -> O(N), где N - количество элементов в мапе.
+        private fun createDataBase(current: Node) {
+            for ((char, node) in current.children) {
+                if (!isBranch) break
 
-                if (curNode != root) dataMap[node] = dataMap[node.parent] + char
+                if (dataMap[node.parent] + char in wordsControl) continue
+
+                if (current != root) dataMap[node] = dataMap[node.parent] + char
                 else dataMap[node] = char.toString()
 
                 val str = dataMap[node]
-                current = findNode(str!!)
-
-                if (current != null && str !in wordsStack && char == endTag) wordsStack.add(dataMap[node.parent]!!)
-
-                createDataBase(current!!)
+                if (str !in wordsControl && char == endTag) {
+                    wordsStack.add(dataMap[node.parent]!!)
+                    wordsControl.add(str!!)
+                    isBranch = false
+                    break
+                }
+                createDataBase(node)
             }
         }
 
@@ -127,7 +136,12 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
         // Ресурсоемкость = О(1)
         override fun next(): String {
             if (!hasNext()) throw IllegalStateException()
+            println("состояние стека $wordsStack")
             lastWord = wordsStack.pop()
+            if (wordsStack.isEmpty()) {
+                isBranch = true
+                createDataBase(root)
+            }
             return lastWord
         }
 

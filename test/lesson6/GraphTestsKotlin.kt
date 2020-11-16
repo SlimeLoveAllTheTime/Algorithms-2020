@@ -15,6 +15,7 @@ class GraphTestsKotlin : AbstractGraphTests() {
     @Tag("7")
     fun testMinimumSpanningTree() {
         minimumSpanningTree { minimumSpanningTree() }
+        someMinimumSpanningTreeTest { minimumSpanningTree() }
     }
 
     @Test
@@ -27,6 +28,7 @@ class GraphTestsKotlin : AbstractGraphTests() {
     @Tag("8")
     fun testLongestSimplePath() {
         longestSimplePath { longestSimplePath() }
+        someLargestPathTest { longestSimplePath() }
     }
 
     @Test

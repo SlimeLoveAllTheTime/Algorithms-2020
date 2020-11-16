@@ -17,7 +17,8 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
 
     override var size: Int = 0
 
-    private val removedSet = mutableSetOf<Any>()
+    //Мне немного подсказали подумать на счет такого подхода
+    object Removed
 
     /**
      * Индекс в таблице, начиная с которого следует искать данный элемент
@@ -33,9 +34,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         var index = element.startingIndex()
         var current = storage[index]
         while (current != null) {
-            if (current == element && current !in removedSet) {
-                return true
-            }
+            if (current == element && current != Removed) return true
             index = (index + 1) % capacity
             current = storage[index]
         }
@@ -53,11 +52,10 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      * но в данном случае это было введено для упрощения кода.
      */
     override fun add(element: T): Boolean {
-        if (element in removedSet) removedSet.remove(element)
         val startingIndex = element.startingIndex()
         var index = startingIndex
         var current = storage[index]
-        while (current != null) {
+        while (current != null && current != Removed) {
             if (current == element) {
                 return false
             }
@@ -90,9 +88,9 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         val startInd = element.startingIndex()
         var ind = startInd
         var current = storage[ind]
-        while (current != null && current != removedSet) {
+        while (current != null && current != Removed) {
             if (current == element) {
-                removedSet.add(current)
+                storage[ind] = Removed
                 size--
                 return true
             }
@@ -126,7 +124,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         // Трудоемкость = О(S), где S - количество проходов по циклу
         // Ресурсоемкость = О(1)
         private fun findCurrent(): T? {
-            while (storage[curInd] == null || storage[curInd] in removedSet) curInd = (curInd + 1) % capacity
+            while (storage[curInd] == null || storage[curInd] == Removed) curInd = (curInd + 1) % capacity
             current = storage[curInd] as T
             currentSize--
             return current
@@ -144,13 +142,14 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
             return findCurrent()!!
         }
 
-        // Трудоемкость (в худшем случае) = О(N), где N - количество элементов. В общем случае трудоемкость = О(S),
-        // где S - количество проходов по циклу.
+        // Трудоемкость = О(1), доступ элемента array по индексу
         // Ресурсоемкость = О(1)
         override fun remove() {
             if (current == null) throw IllegalStateException()
-            remove(current)
+            storage[curInd] = Removed
+            size--
         }
 
     }
+
 }

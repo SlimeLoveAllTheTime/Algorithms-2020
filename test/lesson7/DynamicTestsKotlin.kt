@@ -9,12 +9,14 @@ class DynamicTestsKotlin : AbstractDynamicTests() {
     @Tag("6")
     fun testLongestCommonSubSequence() {
         longestCommonSubSequence { first, second -> longestCommonSubSequence(first, second) }
+        someLongestCommonSubSequence { first, second -> longestCommonSubSequence(first, second) }
     }
 
     @Test
     @Tag("7")
     fun testLongestIncreasingSubSequence() {
         longestIncreasingSubSequence { longestIncreasingSubSequence(it) }
+        someLongestIncreasingSubSequenceTest { longestIncreasingSubSequence(it) }
     }
 
     @Test

@@ -37,6 +37,14 @@ abstract class AbstractDynamicTests {
         )
     }
 
+    fun someLongestCommonSubSequence(longestCommonSubSequence: (String, String) -> String) {
+        assertEquals("12334567", longestCommonSubSequence("123434567", "1283834567"))
+        assertEquals("1", longestCommonSubSequence("abcdefg1111111", "123456789"))
+        assertEquals("", longestCommonSubSequence("abcdefg", "123456789"))
+        assertEquals("9", longestCommonSubSequence("987654321", "123456789"))
+        assertEquals("1", longestCommonSubSequence("123456789", "987654321"))
+    }
+
     fun longestIncreasingSubSequence(longestIncreasingSubSequence: (List<Int>) -> List<Int>) {
         assertEquals(listOf(), longestIncreasingSubSequence(listOf()))
         assertEquals(listOf(1), longestIncreasingSubSequence(listOf(1)))
@@ -54,6 +62,29 @@ abstract class AbstractDynamicTests {
                     45, 76, 15, 99, 100, 88, 84, 35, 88
                 )
             )
+        )
+    }
+
+    fun someLongestIncreasingSubSequenceTest(longestIncreasingSubSequence: (List<Int>) -> List<Int>) {
+        assertEquals(
+            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9),
+            longestIncreasingSubSequence(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0))
+        )
+        assertEquals(listOf(), longestIncreasingSubSequence(listOf()))
+        assertEquals(listOf(1), longestIncreasingSubSequence(listOf(1)))
+        assertEquals(listOf(-1, 1), longestIncreasingSubSequence(listOf(-1, 1, -1, 1, -1, 1, -1, 1)))
+        assertEquals(
+            listOf(7, 8, 9), longestIncreasingSubSequence(
+                listOf(
+                    9, 8, 7, 6, 5, 4, 3, 2, 1,
+                    9, 8, 7, 6, 5, 4, 3, 2, 1,
+                    9, 8, 7, 6, 5, 4, 3, 2, 1
+                )
+            )
+        )
+        assertEquals(
+            listOf(1, 3, 5, 7, 8, 9),
+            longestIncreasingSubSequence(listOf(1, 3, 5, 7, 9, 2, 4, 6, 8, 1, 3, 5, 7, 9, 2, 4, 6, 8))
         )
     }
 

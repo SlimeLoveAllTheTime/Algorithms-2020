@@ -2,6 +2,9 @@
 
 package lesson6
 
+import lesson6.impl.GraphBuilder
+import java.util.*
+
 /**
  * Эйлеров цикл.
  * Средняя
@@ -32,6 +35,7 @@ fun Graph.findEulerLoop(): List<Graph.Edge> {
     TODO()
 }
 
+
 /**
  * Минимальное остовное дерево.
  * Средняя
@@ -60,9 +64,25 @@ fun Graph.findEulerLoop(): List<Graph.Edge> {
  * |
  * J ------------ K
  */
-fun Graph.minimumSpanningTree(): Graph {
-    TODO()
-}
+
+// Трудоемкость = О(V1 * V2), где V1 - количество вершин, а V2 - количество соседей этих вершин.
+// Ресурсоемкость = О(V + E), где V - количество вершин, E - количество ребер.
+fun Graph.minimumSpanningTree(): Graph =
+    if (vertices.size == 0) GraphBuilder().build()
+    else {
+        val dataBase = mutableMapOf<Graph.Vertex, Graph.Edge>()
+        vertices.forEach {
+            for ((vertex, edge) in getConnections(it)) {
+                if (vertex !in dataBase) dataBase[vertex] = edge
+            }
+        }
+        GraphBuilder().apply {
+            for ((vertex, edge) in dataBase) {
+                addVertex(vertex)
+                addConnection(edge.begin, edge.end)
+            }
+        }.build()
+    }
 
 /**
  * Максимальное независимое множество вершин в графе без циклов.
@@ -94,6 +114,7 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
     TODO()
 }
 
+
 /**
  * Наидлиннейший простой путь.
  * Сложная
@@ -114,9 +135,41 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  *
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
+// Трудоемкость = O(V), где V - количество вершин.
+// Ресурсоемкость = О(trajectory.size), где trajectory.size - длина пути.
 fun Graph.longestSimplePath(): Path {
-    TODO()
+    val pathList = mutableListOf<Graph.Vertex>()
+    for (vertex in vertices) bfsWithPath(vertex, pathList)
+    return if (pathList.size == 0) Path(emptyList(), 0)
+    else Path(pathList, pathList.size - 1)
 }
+
+
+// Трудоемкость = О(V + E), где V - количество вершин, E - количество ребер, но из-за использования стэка можно сказать,
+// что O(V)
+// Ресурсоемкость = О(trajectory.size), где trajectory.size - длина пути.
+fun Graph.bfsWithPath(start: Graph.Vertex, pathList: MutableList<Graph.Vertex>) {
+    val stack = Stack<Graph.Vertex>()
+    stack.add(start)
+    val visited = mutableMapOf(start to listOf(start))
+    while (stack.isNotEmpty()) {
+        val next = stack.pop()
+        val trajectory = visited[next]!!
+        if (trajectory.size > pathList.size) {
+            pathList.clear()
+            pathList.addAll(trajectory)
+        }
+        var onlyOneNeighbor = true
+        for (neighbor in getNeighbors(next)) {
+            if (neighbor !in visited && onlyOneNeighbor) {
+                visited[neighbor] = visited[next]!! + neighbor
+                stack.add(neighbor)
+                onlyOneNeighbor = false
+            }
+        }
+    }
+}
+
 
 /**
  * Балда
