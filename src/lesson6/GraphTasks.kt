@@ -65,8 +65,8 @@ fun Graph.findEulerLoop(): List<Graph.Edge> {
  * J ------------ K
  */
 
-// Трудоемкость = О(V1 * V2), где V1 - количество вершин, а V2 - количество соседей этих вершин.
-// Ресурсоемкость = О(V + E), где V - количество вершин, E - количество ребер.
+// Трудоемкость = О(V * E), где V - количество вершин, E - количество ребер.
+// Ресурсоемкость = О(V + E)
 fun Graph.minimumSpanningTree(): Graph =
     if (vertices.size == 0) GraphBuilder().build()
     else {
@@ -135,8 +135,9 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  *
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
-// Трудоемкость = O(V), где V - количество вершин.
-// Ресурсоемкость = О(trajectory.size), где trajectory.size - длина пути.
+// NP - трудная задача, поэтому затраты будут факториал от длины результирующего дерева.
+// Трудоемкость = О(trajectory!), где trajectory = trajectory.size - длина результирующего дерева.
+// Ресурсоемкость = О(trajectory!)
 fun Graph.longestSimplePath(): Path {
     val pathList = mutableListOf<Graph.Vertex>()
     for (vertex in vertices) bfsWithPath(vertex, pathList)
@@ -144,10 +145,6 @@ fun Graph.longestSimplePath(): Path {
     else Path(pathList, pathList.size - 1)
 }
 
-
-// Трудоемкость = О(V + E), где V - количество вершин, E - количество ребер, но из-за использования стэка можно сказать,
-// что O(V)
-// Ресурсоемкость = О(trajectory.size), где trajectory.size - длина пути.
 fun Graph.bfsWithPath(start: Graph.Vertex, pathList: MutableList<Graph.Vertex>) {
     val stack = Stack<Graph.Vertex>()
     stack.add(start)

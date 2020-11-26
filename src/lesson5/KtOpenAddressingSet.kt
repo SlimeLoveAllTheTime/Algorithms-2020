@@ -84,7 +84,6 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
     // где S - количество проходов по циклу.
     // Ресурсоемкость = О(1)
     override fun remove(element: T): Boolean {
-        if (!contains(element)) return false
         val startInd = element.startingIndex()
         var ind = startInd
         var current = storage[ind]
