@@ -65,7 +65,8 @@ fun Graph.findEulerLoop(): List<Graph.Edge> {
  * J ------------ K
  */
 
-// Трудоемкость = О(V * E), где V - количество вершин, E - количество ребер.
+// По сути в базу добавятся все вершины и ребара по одному разу.
+// Трудоемкость = О(V + E), где V - количество вершин, E - количество ребер.
 // Ресурсоемкость = О(V + E)
 fun Graph.minimumSpanningTree(): Graph =
     if (vertices.size == 0) GraphBuilder().build()
@@ -76,6 +77,7 @@ fun Graph.minimumSpanningTree(): Graph =
                 if (vertex !in dataBase) dataBase[vertex] = edge
             }
         }
+        println(dataBase)
         GraphBuilder().apply {
             for ((vertex, edge) in dataBase) {
                 addVertex(vertex)
